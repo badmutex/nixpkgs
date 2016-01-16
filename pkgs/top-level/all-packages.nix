@@ -15020,6 +15020,8 @@ let
 
   pjsip = callPackage ../applications/networking/pjsip { };
 
+  popfile = callPackage ../tools/text/popfile { };
+
   PPSSPP = callPackage ../misc/emulators/ppsspp { SDL = SDL2; };
 
   uae = callPackage ../misc/emulators/uae { };
