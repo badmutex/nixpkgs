@@ -47,7 +47,7 @@ stdenv.mkDerivation rec {
 
   postInstall = ''
     find $out -name '*.pl' -executable | while read path; do
-      wrapProgram "$path" --prefix PERL5LIB : $PERL5LIB:$out/bin --set POPFILE_ROOT $out/bin
+      wrapProgram "$path" --prefix PERL5LIB : $PERL5LIB:$out/bin --set POPFILE_ROOT $out/bin --set POPFILE_USER \$HOME/.popfile
     done
   '';
 
