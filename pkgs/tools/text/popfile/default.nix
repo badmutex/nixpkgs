@@ -1,8 +1,20 @@
-{ stdenv, fetchzip, makeWrapper,
-perl, perlPackages,
+{ stdenv, fetchzip, makeWrapper, perlPackages,
 ... }:
 
-let perlLibs = with perlPackages; [
+stdenv.mkDerivation rec {
+  appname = "popfile";
+  version = "1.1.3";
+  name = "${appname}-${version}";
+
+  src = fetchzip {
+    url = "http://getpopfile.org/downloads/${appname}-${version}.zip";
+    sha256 = "0gcib9j7zxk8r2vb5dbdz836djnyfza36vi8215nxcdfx1xc7l63";
+    stripRoot = false;
+  };
+
+  buildInputs = [ makeWrapper ] ++ (with perlPackages; [
+    ## These are all taken from the popfile documentation as applicable to Linux
+    ## http://getpopfile.org/docs/howtos:allplatformsrequireperl
     perl
     DBI
     DBDSQLite
@@ -12,31 +24,20 @@ let perlLibs = with perlPackages; [
     MIMEBase64 # == MIMEQuotedPrint
     TimeDate # == DateParse
     HTMLTemplate
-    # IOSocketSocks # FIXME error
+    # IO::Socket::Socks is not in nixpkgs
+    # IOSocketSocks 
     IOSocketSSL
     NetSSLeay
     SOAPLite
-  ];
-in
+  ]);
 
-stdenv.mkDerivation rec {
-  shortname = "popfile";
-  version = "1.1.3";
-  name = "${shortname}-${version}";
-
-  src = fetchzip {
-    url = "http://getpopfile.org/downloads/popfile-1.1.3.zip";
-    sha256 = "0gcib9j7zxk8r2vb5dbdz836djnyfza36vi8215nxcdfx1xc7l63";
-    stripRoot = false;
-  };
-
-  buildInputs = [ makeWrapper ] ++ perlLibs;
-  # propagatedBuildInputs = perlLibs;
 
   phases = [ "unpackPhase" "installPhase" "patchPhase" "postInstall" ];
 
   installPhase = ''
     mkdir -p $out/bin
+    # I user `cd` rather than `cp $out/* ...` b/c the * breaks syntax
+    # highlighting in emacs for me.
     cd $src
     cp -r * $out/bin
     cd $out/bin
