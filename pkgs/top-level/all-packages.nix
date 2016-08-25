@@ -17639,5 +17639,5 @@ in
 
   zuki-themes = callPackage ../misc/themes/zuki { };
 
-  zoom-us = qt55.callPackage ../applications/networking/instant-messengers/zoom-us {};
+  zoom-us = qt5.callPackage ../applications/networking/instant-messengers/zoom-us { qt=qt5; };
 }
