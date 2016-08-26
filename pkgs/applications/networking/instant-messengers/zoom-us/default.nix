@@ -19,7 +19,6 @@
 , nss
 , pkgconfig
 , sqlite
-, xlibs
 , xorg
 , zlib
 }:
