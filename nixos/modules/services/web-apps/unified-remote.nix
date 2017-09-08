@@ -29,13 +29,13 @@ in
       tcpPorts = mkOption {
         type = types.listOf types.int;
         default = [ 9510 9511 9512 ];
-        description = "TCP Ports the server listens on";
+        description = "TCP Ports the server listens on (opens firewall if necessary)";
       };
 
       udpPorts = mkOption {
         type = types.listOf types.int;
         default = [ 9511 ];
-        description = "UDP Ports the server listens on";
+        description = "UDP Ports the server listens on (opens firewall if necessary)";
       };
 
       pkg = mkOption {
