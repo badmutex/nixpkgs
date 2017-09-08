@@ -5,6 +5,8 @@
 , makeWrapper
 , fetchurl
 , bluez
+, libX11
+, libXtst
 
 , remotes ? "/var/lib/unified-remote/remotes"
 , ... }:
@@ -17,7 +19,7 @@ stdenv.mkDerivation {
   };
 
   nativeBuildInputs = [ dpkg patchelf makeWrapper ];
-  buildInputs = [ bluez ];
+  buildInputs = [ bluez libX11 ];
 
   buildCommand = ''
     mkdir -p $out
@@ -39,6 +41,8 @@ stdenv.mkDerivation {
 
     ln -s "${stdenv.lib.makeLibraryPath [ stdenv.cc.cc ]}/libstdc++.so.6" $out/lib/
     ln -s "${stdenv.lib.makeLibraryPath [ bluez ]}/libbluetooth.so.3" $out/lib/
+    ln -s "${stdenv.lib.makeLibraryPath [ libX11 ]}/libX11.so.6" $out/lib
+    ln -s "${stdenv.lib.makeLibraryPath [ libXtst ]}/libXtst.so.6" $out/lib
 
     wrapProgram $out/bin/urserver --prefix LD_LIBRARY_PATH : $out/lib
 
