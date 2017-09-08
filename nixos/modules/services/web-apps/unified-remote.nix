@@ -64,7 +64,7 @@ in
       boot.kernelModules = [ "uinput" ];
 
       services.udev.extraRules = ''
-        KERNEL="uinput", GROUP="${cfg.uinputGroup}"
+        KERNEL=="uinput", GROUP="${cfg.uinputGroup}", MODE="0660", TAG+="unified-remote"
       '';
 
       users.groups = builtins.listToAttrs [
