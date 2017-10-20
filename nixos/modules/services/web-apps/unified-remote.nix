@@ -5,6 +5,7 @@ with lib;
 let
 
   cfg = config.services.unified-remote;
+  remotesPath = "${cfg.stateDir}/remotes";
 
 in
 
@@ -14,14 +15,8 @@ in
 
       enable = mkEnableOption "Unified Remote Server";
 
-      remotesPath = mkOption {
-        type = types.str;
-        default = "/var/lib/unified-remote/remotes";
-        description = "Unified Remote remotes";
-      };
-
       stateDir = mkOption {
-        type = types.str;
+        type = types.path;
         default = "/var/lib/unified-remote";
         description = "Path to the state dir";
       };
@@ -52,6 +47,7 @@ in
 
       user = mkOption {
         type = types.str;
+        default = "unified-remote";
         description = "<emphasis>required</emphasis> The user to run Unified Remote as.";
       };
 
@@ -73,34 +69,31 @@ in
         KERNEL=="uinput", GROUP="${cfg.uinputGroup}", MODE="0660", TAG+="unified-remote"
       '';
 
+      users.users."${cfg.user}" = {
+        extraGroups = [ cfg.uinputGroup ];
+        isSystemUser = true;
+        home = cfg.stateDir;
+        createHome = true;
+      };
+
       users.groups = builtins.listToAttrs [
         { name = cfg.uinputGroup; value = {}; }
       ];
-
-      users.users."${cfg.user}".extraGroups = [ cfg.uinputGroup ];
 
       systemd.services.unified-remote = {
         enable = true;
         description = "Unified Remote server";
         wantedBy = [ "multi-user.target" ];
-        path = [ pkgs.unified-remote ];
+        path = [ pkgs.unified-remote pkgs.rsync ];
         serviceConfig.User = cfg.user;
         serviceConfig.Type = "forking";
         serviceConfig.PIDFile = "${cfg.stateDir}/pid";
         script = ''
-          if [[ ! -d "${cfg.remotesPath}" ]]; then
-            mkdir -p "$(dirname ${cfg.remotesPath})"
-            cp -r "${pkgs.unified-remote}/bin/remotes" "${cfg.remotesPath}"
-          fi
-
-          find "${cfg.remotesPath}" -type f -exec chmod 0640 '{}' \;
-
-          mkdir -p ${cfg.stateDir}
-
+          rsync --chmod=D0700,F0600 -r --delete "${pkgs.unified-remote}/bin/remotes/" "${remotesPath}"
           urserver \
             --daemon \
             --pidfile "${cfg.stateDir}"/pid \
-            --remotes="${cfg.remotesPath}"
+            --remotes "${remotesPath}"
         '';
       };
 
