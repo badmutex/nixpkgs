@@ -13,7 +13,21 @@ in
   options = {
     services.unified-remote = {
 
-      enable = mkEnableOption "Unified Remote Server";
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+        example = true;
+        description = ''
+          Whether to enable Unified Remote Server
+
+            NOTE that this is fairly useless without setting the openFirewall flag.
+            Example usage:
+
+            <code>
+            services.unified-remote = { enable = true; openFirewall = true; }
+            </code>
+        '';
+      };
 
       stateDir = mkOption {
         type = types.path;
