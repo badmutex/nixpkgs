@@ -26,16 +26,22 @@ in
         description = "Path to the state dir";
       };
 
+      openFirewall = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Open the firewall. This should be set else Unified Remote cannot be used.";
+      };
+
       tcpPorts = mkOption {
         type = types.listOf types.int;
         default = [ 9510 9511 9512 ];
-        description = "TCP Ports the server listens on (opens firewall if necessary)";
+        description = "TCP Ports the server listens on";
       };
 
       udpPorts = mkOption {
         type = types.listOf types.int;
         default = [ 9511 ];
-        description = "UDP Ports the server listens on (opens firewall if necessary)";
+        description = "UDP Ports the server listens on";
       };
 
       pkg = mkOption {
@@ -100,7 +106,7 @@ in
 
     })
 
-    (mkIf config.networking.firewall.enable {
+    (mkIf cfg.openFirewall {
       networking.firewall.allowedTCPPorts = cfg.tcpPorts;
       networking.firewall.allowedUDPPorts = cfg.udpPorts;
     })
