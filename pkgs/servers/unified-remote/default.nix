@@ -7,8 +7,6 @@
 , bluez
 , libX11
 , libXtst
-
-, remotes ? "/var/lib/unified-remote/remotes"
 , ... }:
 
 stdenv.mkDerivation {
