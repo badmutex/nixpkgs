@@ -13,15 +13,19 @@ import ./make-test.nix {
     };
   };
 
-  testScript =
-    let ports = { web = "9510"; client = "9512"; discovery = "9511"; };
+  testScript = { nodes, ... }:
+    let cfg = nodes.server.config.services.unified-remote;
+        inherit (builtins) toString;
     in
     ''
+      $server->waitForUnit('network-online.target');
       $server->waitForUnit('unified-remote.service');
       $client->waitForUnit('multi-user.target');
-      $client->succeed('nc -w 1 -z server ${ports.client}');
-      $client->succeed('nc -w 1 -z server ${ports.web}');
-      $client->succeed('nc -w 1 -z -u server ${ports.discovery}');
-      $client->succeed('curl http://server:${ports.web}/web');
+      $server->waitForUnit('network-online.target');
+      $client->succeed('nc -w 1 -z server ${toString cfg.remotesPort}');
+      $client->succeed('nc -w 1 -z -u server ${toString cfg.remotesPort}');
+      $client->succeed('nc -w 1 -z server ${toString cfg.webPort}');
+      $client->succeed('nc -w 1 -z -u server ${toString cfg.discoveryPort}');
+      $client->succeed('curl --connect-timeout 1 http://server:${toString cfg.webPort}/web');
     '';
 }

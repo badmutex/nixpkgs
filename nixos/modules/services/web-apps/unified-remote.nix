@@ -41,16 +41,22 @@ in
         description = "Open the firewall. This should be set else Unified Remote cannot be used.";
       };
 
-      tcpPorts = mkOption {
-        type = types.listOf types.int;
-        default = [ 9510 9511 9512 ];
-        description = "TCP Ports the server listens on";
+      remotesPort = mkOption {
+        type = types.int;
+        default = 9512;
+        description = "TCP port to access the remotes. (Only affects the firewall; does not configure UR)";
       };
 
-      udpPorts = mkOption {
-        type = types.listOf types.int;
-        default = [ 9511 ];
-        description = "UDP Ports the server listens on";
+      discoveryPort = mkOption {
+        type = types.int;
+        default = 9511;
+        description = "UDP port for autodiscovery. (Only affects the firewall; does not configure UR)";
+      };
+
+      webPort = mkOption {
+        type = types.int;
+        default = 9510;
+        description = "TCP port the GUI runs on. (Only affects the firewall; does not configure UR)";
       };
 
       pkg = mkOption {
@@ -114,8 +120,8 @@ in
     })
 
     (mkIf cfg.openFirewall {
-      networking.firewall.allowedTCPPorts = cfg.tcpPorts;
-      networking.firewall.allowedUDPPorts = cfg.udpPorts;
+      networking.firewall.allowedTCPPorts = [ cfg.remotesPort cfg.webPort ];
+      networking.firewall.allowedUDPPorts = [ cfg.remotesPort cfg.discoveryPort ];
     })
 
     ];
