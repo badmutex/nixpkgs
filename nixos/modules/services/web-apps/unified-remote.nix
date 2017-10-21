@@ -26,6 +26,9 @@ in
             <code>
             services.unified-remote = { enable = true; openFirewall = true; }
             </code>
+
+            NOTE the <code>*Port</code> options only configure the firewall.
+            Changing the Unified Remote ports declaratively is currently unsupported.
         '';
       };
 
