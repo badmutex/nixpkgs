@@ -46,4 +46,12 @@ stdenv.mkDerivation {
 
   '';
 
+  meta = with stdenv.lib; {
+    homepage = https://www.unifiedremote.com;
+    description = "Turn your smartphone into a universal remote control";
+    license = licenses.unfree;
+    maintainers = [ maintainers.badi ];
+    platforms = platforms.unix;
+  };
+
 }
