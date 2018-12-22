@@ -11,6 +11,7 @@ let
 
   phpOptionsExtensions = ''
     ${optionalString cfg.caching.apcu "extension=${cfg.phpPackages.apcu}/lib/php/extensions/apcu.so"}
+    ${optionalString cfg.php.imagick.enable "extension=${cfg.phpPackages.imagick}/lib/php/extensions/imagick.so"}
     ${optionalString cfg.caching.redis "extension=${cfg.phpPackages.redis}/lib/php/extensions/redis.so"}
     ${optionalString cfg.caching.memcached "extension=${cfg.phpPackages.memcached}/lib/php/extensions/memcached.so"}
     zend_extension = opcache.so
@@ -78,6 +79,15 @@ in {
       description = ''
         Enable this option if you plan on using the webfinger plugin.
         The appropriate nginx rewrite rules will be added to your configuration.
+      '';
+    };
+
+    php.imagick.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description= ''
+        Enable the imagick php module.
+        Needs to be present in <literal>services.nextcloud.phpPackages</literal>.
       '';
     };
 
